@@ -11,13 +11,17 @@ bookmarks_db = sys.argv[1]
 
 conn = sqlite3.connect(bookmarks_db)
 
-result = conn.execute('''
+conn.execute('''
 UPDATE moz_places
 SET url = REPLACE(url, 'http://', 'https://')
 WHERE url LIKE 'http://%';
 ''')
-
-print(f"Upgraded {result.rowcount} bookmarks to HTTPS.")
+result = conn.execute('''
+UPDATE moz_places
+SET url = REPLACE(url, 'https://localhost', 'http://localhost')
+WHERE url LIKE 'https://%';
+''')
+print(f"Made sure {result.rowcount} bookmarks (sans localhost ones) are HTTPS.")
 
 conn.commit()
 conn.close()
